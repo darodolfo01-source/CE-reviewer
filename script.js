@@ -544,55 +544,60 @@ function showSignupModal() {
     document.getElementById('loginModal').style.display = 'none';
     document.getElementById('signupModal').style.display = 'flex';
 }
+// === MODAL FUNCTIONS ===
+function showSignupModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('signupModal').style.display = 'flex';
+}
 function closeSignupModal() {
     document.getElementById('signupModal').style.display = 'none';
 }
 
 // === NOTIFICATION STYLES ===
-const notificationStyles = document.createElement('style');
-notificationStyles.textContent = `
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
-    background: rgba(26, 26, 46, 0.95);
-    border-left: 4px solid var(--primary);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 3000;
-    backdrop-filter: blur(10px);
-    max-width: 300px;
+// Only add these styles once
+if (!document.getElementById('notification-styles')) {
+    const notificationStyles = document.createElement('style');
+    notificationStyles.id = 'notification-styles';
+    notificationStyles.textContent = `
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            background: rgba(26, 26, 46, 0.95);
+            border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+            backdrop-filter: blur(10px);
+            max-width: 300px;
+        }
+        .notification.show {
+            transform: translateX(0);
+        }
+        .notification.success {
+            border-color: var(--success);
+        }
+        .notification.error {
+            border-color: var(--danger);
+        }
+        .notification.warning {
+            border-color: var(--warning);
+        }
+        .notification.info {
+            border-color: var(--primary);
+        }
+        .notification i {
+            font-size: 1.2rem;
+        }
+        .notification.success i { color: var(--success); }
+        .notification.error i { color: var(--danger); }
+        .notification.warning i { color: var(--warning); }
+        .notification.info i { color: var(--primary); }
+    `;
+    document.head.appendChild(notificationStyles);
 }
-.notification.show {
-    transform: translateX(0);
-}
-.notification.success {
-    border-color: var(--success);
-}
-.notification.error {
-    border-color: var(--danger);
-}
-.notification.warning {
-    border-color: var(--warning);
-}
-.notification.info {
-    border-color: var(--primary);
-}
-.notification i {
-    font-size: 1.2rem;
-}
-.notification.success i { color: var(--success); }
-.notification.error i { color: var(--danger); }
-.notification.warning i { color: var(--warning); }
-.notification.info i { color: var(--primary); }
-`;
-document.head.appendChild(notificationStyles);
-
-// === FINISH FILE ===
-})(); // If your file starts with (function() {, this closes it.
-// If not, just end the file here.

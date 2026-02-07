@@ -184,6 +184,16 @@ function loginAsGuest() {
     showNotification('Welcome, Guest! Track your progress by creating an account.', 'info');
 }
 
+// MODAL FUNCTIONS - ADDED MISSING FUNCTIONS
+function showSignupModal() {
+    document.getElementById('loginModal').style.display = 'none';
+    document.getElementById('signupModal').style.display = 'flex';
+}
+
+function closeSignupModal() {
+    document.getElementById('signupModal').style.display = 'none';
+}
+
 function handleLogin() {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
@@ -209,6 +219,11 @@ function handleLogin() {
     document.getElementById('loginModal').style.display = 'none';
     
     showNotification('Welcome back! Your progress has been loaded.', 'success');
+}
+
+function handleSignup() {
+    // This is a placeholder function for signup
+    showNotification('Signup functionality would go here!', 'info');
 }
 
 // Update User Display
@@ -499,7 +514,7 @@ function showAdminPanel() {
     showNotification('Admin panel is under development. Coming soon!', 'info');
 }
 
-// CSS for Notifications (add to style.css)
+// Add notification styles to the page
 const notificationStyles = document.createElement('style');
 notificationStyles.textContent = `
 .notification {
@@ -539,65 +554,19 @@ notificationStyles.textContent = `
 .notification.info {
     border-color: var(--primary);
 }
-// === MODAL FUNCTIONS ===
-function showSignupModal() {
-    document.getElementById('loginModal').style.display = 'none';
-    document.getElementById('signupModal').style.display = 'flex';
-}
-// === MODAL FUNCTIONS ===
-function showSignupModal() {
-    document.getElementById('loginModal').style.display = 'none';
-    document.getElementById('signupModal').style.display = 'flex';
-}
-function closeSignupModal() {
-    document.getElementById('signupModal').style.display = 'none';
+
+.notification i {
+    font-size: 1.2rem;
 }
 
-// === NOTIFICATION STYLES ===
-// Only add these styles once
-if (!document.getElementById('notification-styles')) {
-    const notificationStyles = document.createElement('style');
-    notificationStyles.id = 'notification-styles';
-    notificationStyles.textContent = `
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 1rem 1.5rem;
-            border-radius: 10px;
-            background: rgba(26, 26, 46, 0.95);
-            border-left: 4px solid var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            z-index: 3000;
-            backdrop-filter: blur(10px);
-            max-width: 300px;
-        }
-        .notification.show {
-            transform: translateX(0);
-        }
-        .notification.success {
-            border-color: var(--success);
-        }
-        .notification.error {
-            border-color: var(--danger);
-        }
-        .notification.warning {
-            border-color: var(--warning);
-        }
-        .notification.info {
-            border-color: var(--primary);
-        }
-        .notification i {
-            font-size: 1.2rem;
-        }
-        .notification.success i { color: var(--success); }
-        .notification.error i { color: var(--danger); }
-        .notification.warning i { color: var(--warning); }
-        .notification.info i { color: var(--primary); }
-    `;
+.notification.success i { color: var(--success); }
+.notification.error i { color: var(--danger); }
+.notification.warning i { color: var(--warning); }
+.notification.info i { color: var(--primary); }
+`;
+
+// Only add the styles once
+if (!document.querySelector('style[data-notification-styles]')) {
+    notificationStyles.setAttribute('data-notification-styles', 'true');
     document.head.appendChild(notificationStyles);
 }

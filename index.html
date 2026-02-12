@@ -25,7 +25,9 @@
                 <a href="#topics" class="nav-link"><i class="fas fa-book-open"></i> Topics</a>
                 <a href="#formulas" class="nav-link"><i class="fas fa-square-root-alt"></i> Formulas</a>
                 <a href="#problems" class="nav-link"><i class="fas fa-puzzle-piece"></i> Practice</a>
+                <a href="#exams" class="nav-link"><i class="fas fa-clipboard-list"></i> Exams</a>
                 <a href="#leaderboard" class="nav-link"><i class="fas fa-trophy"></i> Leaderboard</a>
+                <a href="#discuss" class="nav-link"><i class="fas fa-comments"></i> Discuss</a>
             </div>
             <div class="user-section">
                 <button class="btn-login" id="loginBtn"><i class="fas fa-user"></i> Login</button>
@@ -72,6 +74,7 @@
                     </div>
                     <div class="hero-buttons">
                         <a href="#topics" class="btn-primary"><i class="fas fa-play-circle"></i> Start Learning</a>
+                        <a href="#features" class="btn-secondary"><i class="fas fa-star"></i> Explore Features</a>
                     </div>
                 </div>
                 <div class="hero-visual animate__animated animate__fadeInRight">
@@ -88,7 +91,7 @@
                             <p class="problem-preview">Find the derivative of f(x) = 3x² + 2x - 5</p>
                             <div class="answer-input">
                                 <input type="text" placeholder="Type your answer..." id="quickAnswer">
-                                <button class="btn-check"><i class="fas fa-check"></i></button>
+                                <button class="btn-check" id="quickAnswerBtn"><i class="fas fa-check"></i></button>
                             </div>
                         </div>
                     </div>
@@ -97,7 +100,52 @@
         </div>
     </section>
 
-    <!-- Topics -->
+    <!-- Features -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2 class="section-title animate__animated animate__fadeInUp">
+                <span class="title-decoration">✦</span> Why Choose Our Platform
+                <span class="title-decoration">✦</span>
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Adaptive Learning</h3>
+                    <p>AI-powered recommendations based on your performance</p>
+                    <div class="feature-progress">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 85%"></div>
+                        </div>
+                        <span>85% Match</span>
+                    </div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Progress Analytics</h3>
+                    <p>Detailed insights on your strengths and weaknesses</p>
+                    <div class="sparkline">📈 📊 📉</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>Gamified Learning</h3>
+                    <p>Earn badges, points, and climb the leaderboard</p>
+                    <div class="badges-showcase">
+                        <span class="mini-badge gold"><i class="fas fa-crown"></i></span>
+                        <span class="mini-badge silver"><i class="fas fa-star"></i></span>
+                        <span class="mini-badge bronze"><i class="fas fa-bolt"></i></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Topics with Progress -->
     <section id="topics" class="topics">
         <div class="container">
             <h2 class="section-title animate__animated animate__fadeInUp">
@@ -207,7 +255,7 @@
         </div>
     </section>
 
-    <!-- Formulas Section -->
+    <!-- Interactive Formulas Section -->
     <section id="formulas" class="formulas-section">
         <div class="container">
             <h2 class="section-title">
@@ -245,14 +293,21 @@
                             <span class="count">30</span>
                         </div>
                     </div>
+                    <div class="bookmarked-formulas">
+                        <h4><i class="fas fa-bookmark"></i> Bookmarked</h4>
+                        <div class="bookmark-list">
+                            <!-- Will be populated by JS -->
+                        </div>
+                    </div>
                 </div>
                 <div class="formula-main">
                     <div class="formula-display">
                         <div class="formula-header">
                             <h3 id="currentFormulaTitle">Select a Formula</h3>
                             <div class="formula-actions">
-                                <button class="btn-action bookmark-btn"><i class="far fa-bookmark"></i></button>
+                                <button class="btn-action bookmark-btn" id="bookmarkBtn"><i class="far fa-bookmark"></i></button>
                                 <button class="btn-action example-btn"><i class="fas fa-lightbulb"></i> Example</button>
+                                <button class="btn-action quiz-btn"><i class="fas fa-question-circle"></i> Quiz Me</button>
                             </div>
                         </div>
                         <div class="formula-content">
@@ -274,9 +329,7 @@
                                 <div class="info-section">
                                     <h4><i class="fas fa-calculator"></i> Variables</h4>
                                     <div class="variables-grid" id="variablesList">
-                                        <div class="variable">a: coefficient of x²</div>
-                                        <div class="variable">b: coefficient of x</div>
-                                        <div class="variable">c: constant term</div>
+                                        <!-- Variables will be populated -->
                                     </div>
                                 </div>
                                 <div class="info-section">
@@ -291,7 +344,7 @@
         </div>
     </section>
 
-    <!-- Practice Section -->
+    <!-- Gamified Practice Section -->
     <section id="problems" class="practice-section">
         <div class="container">
             <div class="practice-header">
@@ -359,13 +412,13 @@
                         <p class="problem-statement" id="problemStatement">A reinforced concrete beam has a width of 300mm and an effective depth of 500mm. If the compressive strength of concrete is 28 MPa and the yield strength of steel is 415 MPa, what is the maximum moment capacity?</p>
                         
                         <div class="problem-options" id="problemOptions">
-                            <!-- JavaScript will populate this -->
+                            <!-- Options will be loaded by JS -->
                         </div>
                         
                         <div class="problem-actions">
-                            <button class="btn-hint"><i class="fas fa-lightbulb"></i> Get Hint (-5 XP)</button>
-                            <button class="btn-skip"><i class="fas fa-forward"></i> Skip Problem</button>
-                            <button class="btn-submit"><i class="fas fa-paper-plane"></i> Submit Answer</button>
+                            <button class="btn-hint" id="hintBtn"><i class="fas fa-lightbulb"></i> Get Hint (-5 XP)</button>
+                            <button class="btn-skip" id="skipBtn"><i class="fas fa-forward"></i> Skip Problem</button>
+                            <button class="btn-submit" id="submitAnswer"><i class="fas fa-paper-plane"></i> Submit Answer</button>
                         </div>
                         
                         <div class="solution-area hidden">
@@ -373,7 +426,31 @@
                             <div class="solution-content" id="solutionContent">
                                 <!-- Solution will appear here -->
                             </div>
-                            <button class="btn-next"><i class="fas fa-arrow-right"></i> Next Problem</button>
+                            <button class="btn-next" id="nextProblemBtn"><i class="fas fa-arrow-right"></i> Next Problem</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="progress-tracker">
+                    <h4>Session Progress</h4>
+                    <div class="progress-visual">
+                        <div class="progress-steps">
+                            <div class="step active"><i class="fas fa-check"></i></div>
+                            <div class="step"></div>
+                            <div class="step"></div>
+                            <div class="step"></div>
+                            <div class="step"></div>
+                        </div>
+                        <p>Complete 5 problems to earn a badge!</p>
+                    </div>
+                    <div class="achievements">
+                        <h4>Recent Achievements</h4>
+                        <div class="achievement-list">
+                            <div class="achievement">
+                                <i class="fas fa-brain"></i>
+                                <span>First Problem Solved</span>
+                            </div>
+                            <!-- More achievements will be added -->
                         </div>
                     </div>
                 </div>
@@ -424,12 +501,89 @@
                             <span>Problems Solved</span>
                             <span>XP Points</span>
                         </div>
-                        <!-- JavaScript will populate this -->
+                        <!-- Leaderboard entries will be populated by JS -->
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content login-modal">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <div class="login-container">
+                <div class="login-side">
+                    <h2>Welcome Back!</h2>
+                    <p>Track your progress, earn achievements, and compete with peers.</p>
+                    <div class="login-features">
+                        <div class="feature">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Progress Analytics</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-trophy"></i>
+                            <span>Achievements</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-users"></i>
+                            <span>Community</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="login-form">
+                    <h3>Sign In to Your Account</h3>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> Email</label>
+                        <input type="email" id="loginEmail" placeholder="student@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> Password</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password">
+                    </div>
+                    <button class="btn-login-submit" id="submitLogin">Sign In</button>
+                    <div class="login-divider">
+                        <span>or continue as</span>
+                    </div>
+                    <button class="btn-guest" id="guestLogin">Guest User</button>
+                    <p class="signup-link">New here? <a href="#" id="showSignup">Create account</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signupModal" class="modal hidden">
+        <div class="modal-content signup-modal">
+            <span class="close-signup" id="closeSignup">&times;</span>
+            <h2>Join CE Mastery Hub</h2>
+            <div class="signup-form">
+                <div class="form-group">
+                    <label><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="signupName" placeholder="Juan Dela Cruz">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-envelope"></i> Email</label>
+                    <input type="email" id="signupEmail" placeholder="student@example.com">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password">
+                </div>
+                <div class="form-group">
+                    <label><i class="fas fa-graduation-cap"></i> Year Level</label>
+                    <select id="signupYear">
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                        <option value="5">Reviewer</option>
+                    </select>
+                </div>
+                <button class="btn-signup-submit" id="submitSignup">Create Account</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -438,50 +592,41 @@
                 <div class="footer-section">
                     <h3>CE Mastery Hub</h3>
                     <p>Transforming civil engineering education through interactive learning and gamification.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
                 </div>
                 <div class="footer-section">
                     <h4>Quick Links</h4>
                     <a href="#topics">Topics</a>
                     <a href="#formulas">Formulas</a>
                     <a href="#problems">Practice</a>
-                    <a href="#leaderboard">Leaderboard</a>
+                    <a href="#exams">Exams</a>
+                </div>
+                <div class="footer-section">
+                    <h4>Resources</h4>
+                    <a href="#">Study Guides</a>
+                    <a href="#">Video Tutorials</a>
+                    <a href="#">Formula Sheets</a>
+                    <a href="#">Past Exams</a>
                 </div>
                 <div class="footer-section">
                     <h4>Contact</h4>
                     <p><i class="fas fa-envelope"></i> support@cemasteryhub.com</p>
+                    <p><i class="fas fa-phone"></i> (02) 1234-5678</p>
                     <button class="btn-admin" id="adminBtn"><i class="fas fa-cog"></i> Admin Panel</button>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2024 CE Mastery Hub. All rights reserved. | Designed for Civil Engineering Students</p>
+                <p>&copy; 2024 CE Mastery Hub. All rights reserved. | Designed with <i class="fas fa-heart"></i> for Civil Engineering Students</p>
             </div>
         </div>
     </footer>
-<!-- Missing Elements for JavaScript -->
-<div id="app-content" style="display: none;">
-    <!-- Problem elements -->
-    <div id="problemStatement"></div>
-    <div id="problemOptions"></div>
-    <div id="solutionContent"></div>
-    
-    <!-- Formula elements -->
-    <div id="currentFormulaTitle"></div>
-    <div id="formulaText"></div>
-    <div id="formulaDescription"></div>
-    <div id="formulaApplication"></div>
-    <div id="variablesList"></div>
-    
-    <!-- User elements -->
-    <div id="streakCount"></div>
-    <div id="pointsCount"></div>
-    <div id="userLevel"></div>
-</div>
 
-<!-- JavaScript Files -->
-<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
-<script src="data.js"></script>
-<script src="script.js"></script>
-    <!-- JavaScript Files - CRITICAL LOAD ORDER -->
+    <!-- JavaScript Files -->
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <script src="data.js"></script>
     <script src="script.js"></script>

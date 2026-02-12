@@ -2,20 +2,45 @@
 const appState = {
     currentUser: null,
     isLoggedIn: false,
-    userProgress: JSON.parse(localStorage.getItem('ce_progress')) || {},
+    userProgress: {},
     currentFormulaCategory: 'all',
     currentFormulaIndex: 0,
     currentDifficulty: 'easy',
     currentProblemId: 1,
-    streak: parseInt(localStorage.getItem('streak')) || 0,
-    points: parseInt(localStorage.getItem('points')) || 0,
+    streak: 0,
+    points: 0,
     level: 1,
-    bookmarks: JSON.parse(localStorage.getItem('bookmarks')) || []
+    bookmarks: []
 };
+
+// Safely load from localStorage
+try {
+    const savedProgress = localStorage.getItem('ce_progress');
+    if (savedProgress) appState.userProgress = JSON.parse(savedProgress);
+    
+    const savedBookmarks = localStorage.getItem('bookmarks');
+    if (savedBookmarks) appState.bookmarks = JSON.parse(savedBookmarks);
+    
+    const savedStreak = localStorage.getItem('streak');
+    if (savedStreak) appState.streak = parseInt(savedStreak);
+    
+    const savedPoints = localStorage.getItem('points');
+    if (savedPoints) appState.points = parseInt(savedPoints);
+    
+    const savedUser = localStorage.getItem('ce_user');
+    if (savedUser) {
+        appState.currentUser = JSON.parse(savedUser);
+        appState.isLoggedIn = true;
+    }
+} catch (e) {
+    console.warn('LocalStorage not available – using defaults');
+}
 
 // ====== INITIALIZATION ======
 document.addEventListener('DOMContentLoaded', function() {
-    // Safe particles initialization
+    console.log('✅ Script loaded – initializing...');
+    
+    // Safe particles init
     if (typeof particlesJS !== 'undefined') {
         particlesJS('particles-js', {
             particles: {
@@ -61,30 +86,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ====== INITIAL SETUP ======
 function initApp() {
-    // Safe localStorage retrieval
-    try {
-        const savedUser = localStorage.getItem('ce_user');
-        if (savedUser) {
-            appState.currentUser = JSON.parse(savedUser);
-            appState.isLoggedIn = true;
-        }
-    } catch (e) { console.warn('LocalStorage not available'); }
-
-    // Load initial formula set
     loadFormulas('all');
-    
-    // Load first problem
     loadProblem(1, 'easy');
-    
-    // Update UI based on login state
     updateUserDisplay();
     updateProgressBars();
     updateStatsDisplay();
 }
 
+// ====== SAFE LOCALSTORAGE WRITERS ======
+function safeSetItem(key, value) {
+    try {
+        localStorage.setItem(key, value);
+    } catch (e) {
+        console.warn(`Could not save ${key} to localStorage`, e);
+    }
+}
+
 // ====== GLOBAL EVENT LISTENERS ======
 function setupEventListeners() {
-    // ----- Authentication -----
     safeListener('loginBtn', 'click', showLoginModal);
     safeListener('guestLogin', 'click', loginAsGuest);
     safeListener('submitLogin', 'click', handleLogin);
@@ -93,66 +112,51 @@ function setupEventListeners() {
     safeListener('closeModal', 'click', closeLoginModal);
     safeListener('closeSignup', 'click', closeSignupModal);
 
-    // ----- Navigation & Smooth Scroll -----
     document.querySelectorAll('.nav-link, .btn-primary, .btn-secondary, a[href^="#"]').forEach(link => {
         link.addEventListener('click', smoothScroll);
     });
 
-    // ----- Topic Explore Buttons -----
     document.querySelectorAll('.btn-explore').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
-            const topic = this.dataset.topic;
-            exploreTopic(topic);
+            exploreTopic(this.dataset.topic);
         });
     });
 
-    // ----- Formula Sidebar Categories -----
     document.querySelectorAll('.category').forEach(cat => {
         cat.addEventListener('click', function() {
-            const category = this.dataset.category;
-            loadFormulas(category);
+            loadFormulas(this.dataset.category);
         });
     });
 
-    // ----- Formula Navigation -----
     safeListener('prevFormula', 'click', prevFormula);
     safeListener('nextFormula', 'click', nextFormula);
-
-    // ----- Bookmark Button -----
     safeListener('bookmarkBtn', 'click', toggleBookmark);
 
-    // ----- Difficulty Selection -----
     document.querySelectorAll('.diff-card').forEach(card => {
         card.addEventListener('click', function() {
             selectDifficulty(this.dataset.level);
         });
     });
 
-    // ----- Practice Arena Actions -----
     safeListener('submitAnswer', 'click', checkAnswer);
     safeListener('hintBtn', 'click', getHint);
     safeListener('skipBtn', 'click', skipProblem);
     safeListener('nextProblemBtn', 'click', nextProblem);
 
-    // ----- Quick Answer in Hero -----
     safeListener('quickAnswerBtn', 'click', checkQuickAnswer);
     safeListener('quickAnswer', 'keypress', function(e) {
         if (e.key === 'Enter') checkQuickAnswer();
     });
 
-    // ----- Leaderboard Tabs -----
     document.querySelectorAll('.leaderboard-tab').forEach(tab => {
         tab.addEventListener('click', function() {
-            const boardType = this.dataset.board;
-            switchLeaderboard(boardType);
+            switchLeaderboard(this.dataset.board);
         });
     });
 
-    // ----- Admin Panel -----
     safeListener('adminBtn', 'click', showAdminPanel);
 
-    // ----- Close Modals on Outside Click -----
     window.addEventListener('click', function(e) {
         if (e.target.classList.contains('modal')) {
             e.target.style.display = 'none';
@@ -160,7 +164,6 @@ function setupEventListeners() {
     });
 }
 
-// Helper to safely add event listener
 function safeListener(id, event, handler) {
     const el = document.getElementById(id);
     if (el) el.addEventListener(event, handler);
@@ -168,21 +171,22 @@ function safeListener(id, event, handler) {
 
 // ====== AUTHENTICATION ======
 function showLoginModal() {
-    document.getElementById('loginModal').style.display = 'flex';
+    const modal = document.getElementById('loginModal');
+    if (modal) modal.style.display = 'flex';
 }
-
 function closeLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
+    const modal = document.getElementById('loginModal');
+    if (modal) modal.style.display = 'none';
 }
-
 function showSignupModal(e) {
     e.preventDefault();
     closeLoginModal();
-    document.getElementById('signupModal').style.display = 'flex';
+    const modal = document.getElementById('signupModal');
+    if (modal) modal.style.display = 'flex';
 }
-
 function closeSignupModal() {
-    document.getElementById('signupModal').style.display = 'none';
+    const modal = document.getElementById('signupModal');
+    if (modal) modal.style.display = 'none';
 }
 
 function loginAsGuest() {
@@ -193,20 +197,19 @@ function loginAsGuest() {
         avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=guest'
     };
     appState.isLoggedIn = true;
-    localStorage.setItem('ce_user', JSON.stringify(appState.currentUser));
+    safeSetItem('ce_user', JSON.stringify(appState.currentUser));
     updateUserDisplay();
     closeLoginModal();
     showNotification('Welcome, Guest! Track your progress by creating an account.', 'info');
 }
 
 function handleLogin() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+    const email = document.getElementById('loginEmail')?.value;
+    const password = document.getElementById('loginPassword')?.value;
     if (!email || !password) {
         showNotification('Please fill in all fields', 'error');
         return;
     }
-    // Simulated login
     appState.currentUser = {
         name: email.split('@')[0],
         email: email,
@@ -214,17 +217,17 @@ function handleLogin() {
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
     };
     appState.isLoggedIn = true;
-    localStorage.setItem('ce_user', JSON.stringify(appState.currentUser));
+    safeSetItem('ce_user', JSON.stringify(appState.currentUser));
     updateUserDisplay();
     closeLoginModal();
     showNotification('Welcome back! Your progress has been loaded.', 'success');
 }
 
 function handleSignup() {
-    const name = document.getElementById('signupName').value;
-    const email = document.getElementById('signupEmail').value;
-    const password = document.getElementById('signupPassword').value;
-    const year = document.getElementById('signupYear').value;
+    const name = document.getElementById('signupName')?.value;
+    const email = document.getElementById('signupEmail')?.value;
+    const password = document.getElementById('signupPassword')?.value;
+    const year = document.getElementById('signupYear')?.value;
     if (!name || !email || !password) {
         showNotification('Please fill all fields', 'error');
         return;
@@ -236,7 +239,7 @@ function handleSignup() {
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`
     };
     appState.isLoggedIn = true;
-    localStorage.setItem('ce_user', JSON.stringify(appState.currentUser));
+    safeSetItem('ce_user', JSON.stringify(appState.currentUser));
     updateUserDisplay();
     closeSignupModal();
     showNotification('Account created successfully!', 'success');
@@ -293,7 +296,6 @@ function loadFormulas(category) {
     appState.currentFormulaCategory = category;
     appState.currentFormulaIndex = 0;
 
-    // Update active category in sidebar
     document.querySelectorAll('.category').forEach(cat => {
         cat.classList.toggle('active', cat.dataset.category === category);
     });
@@ -308,7 +310,6 @@ function loadFormulas(category) {
     if (formulas.length > 0) {
         displayFormula(formulas[0], 0, formulas.length);
     } else {
-        // No formulas - show placeholder
         document.getElementById('currentFormulaTitle').textContent = 'No formulas found';
         document.getElementById('formulaText').textContent = '∅';
         document.getElementById('formulaDescription').textContent = 'No description available.';
@@ -325,13 +326,11 @@ function displayFormula(formula, index, total) {
     document.getElementById('formulaApplication').textContent = formula.application || formula.example;
     document.querySelector('.formula-counter').textContent = `${index + 1}/${total}`;
     
-    // Variables
     const varsList = document.getElementById('variablesList');
     varsList.innerHTML = formula.variables?.length 
         ? formula.variables.map(v => `<div class="variable">${v}</div>`).join('')
         : '<div class="variable">No variables defined</div>';
 
-    // Update bookmark icon
     const bookmarkBtn = document.getElementById('bookmarkBtn');
     if (bookmarkBtn) {
         const isBookmarked = appState.bookmarks.some(b => b.id === formula.id);
@@ -377,9 +376,8 @@ function toggleBookmark() {
         appState.bookmarks.splice(index, 1);
         showNotification('Bookmark removed', 'info');
     }
-    localStorage.setItem('bookmarks', JSON.stringify(appState.bookmarks));
+    safeSetItem('bookmarks', JSON.stringify(appState.bookmarks));
     updateBookmarkList();
-    // Update icon
     const bookmarkBtn = document.getElementById('bookmarkBtn');
     if (bookmarkBtn) {
         bookmarkBtn.innerHTML = index === -1 
@@ -404,7 +402,7 @@ function updateBookmarkList() {
 }
 
 function exploreTopic(topic) {
-    document.getElementById('formulas').scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('formulas')?.scrollIntoView({ behavior: 'smooth' });
     loadFormulas(topic);
 }
 
@@ -416,18 +414,21 @@ function loadProblem(problemId, difficulty) {
     appState.currentProblemId = problemId;
     appState.currentDifficulty = difficulty;
 
-    document.getElementById('problemStatement').textContent = problem.question;
+    const statementEl = document.getElementById('problemStatement');
+    if (statementEl) statementEl.textContent = problem.question;
     
     const optionsContainer = document.getElementById('problemOptions');
-    optionsContainer.innerHTML = problem.options.map((opt, idx) => `
-        <div class="option" data-index="${idx}">
-            <input type="radio" name="problem-answer" id="opt${idx}" value="${idx}">
-            <label for="opt${idx}">${opt}</label>
-        </div>
-    `).join('');
+    if (optionsContainer) {
+        optionsContainer.innerHTML = problem.options.map((opt, idx) => `
+            <div class="option" data-index="${idx}">
+                <input type="radio" name="problem-answer" id="opt${idx}" value="${idx}">
+                <label for="opt${idx}">${opt}</label>
+            </div>
+        `).join('');
+    }
 
-    // Hide solution area
-    document.querySelector('.solution-area').classList.add('hidden');
+    const solutionArea = document.querySelector('.solution-area');
+    if (solutionArea) solutionArea.classList.add('hidden');
 }
 
 function selectDifficulty(level) {
@@ -449,28 +450,29 @@ function checkAnswer() {
     if (!problem) return;
 
     if (answerIndex === problem.answer) {
-        // Correct!
-        showNotification('✅ Correct! +' + problem.points + ' XP', 'success');
+        showNotification(`✅ Correct! +${problem.points} XP`, 'success');
         appState.points += problem.points;
-        localStorage.setItem('points', appState.points);
+        safeSetItem('points', appState.points.toString());
         updateStatsDisplay();
         
-        // Update progress (simplified)
         const topicKey = mapTopicToKey(problem.topic);
         if (topicKey) {
             if (!appState.userProgress[topicKey]) appState.userProgress[topicKey] = { solved: 0, total: 100 };
             appState.userProgress[topicKey].solved++;
-            localStorage.setItem('ce_progress', JSON.stringify(appState.userProgress));
+            safeSetItem('ce_progress', JSON.stringify(appState.userProgress));
             updateProgressBars();
             updateProgressRing();
         }
 
-        // Show solution
-        document.querySelector('.solution-area').classList.remove('hidden');
-        document.getElementById('solutionContent').innerHTML = `
-            <p><strong>Solution:</strong> ${problem.solution}</p>
-            <p><strong>Explanation:</strong> ${problem.explanation}</p>
-        `;
+        const solutionArea = document.querySelector('.solution-area');
+        const solutionContent = document.getElementById('solutionContent');
+        if (solutionArea && solutionContent) {
+            solutionArea.classList.remove('hidden');
+            solutionContent.innerHTML = `
+                <p><strong>Solution:</strong> ${problem.solution}</p>
+                <p><strong>Explanation:</strong> ${problem.explanation}</p>
+            `;
+        }
     } else {
         showNotification('❌ Incorrect. Try again!', 'error');
     }
@@ -479,7 +481,7 @@ function checkAnswer() {
 function getHint() {
     if (appState.points >= 5) {
         appState.points -= 5;
-        localStorage.setItem('points', appState.points);
+        safeSetItem('points', appState.points.toString());
         updateStatsDisplay();
         showNotification('Hint: Review the related formula!', 'info');
     } else {
@@ -488,7 +490,6 @@ function getHint() {
 }
 
 function skipProblem() {
-    // Load next problem in same difficulty
     const problems = problemsData[appState.currentDifficulty];
     const currentIndex = problems.findIndex(p => p.id === appState.currentProblemId);
     const nextIndex = (currentIndex + 1) % problems.length;
@@ -497,7 +498,7 @@ function skipProblem() {
 }
 
 function nextProblem() {
-    skipProblem(); // same behavior
+    skipProblem();
 }
 
 function mapTopicToKey(topic) {
@@ -512,23 +513,22 @@ function mapTopicToKey(topic) {
     return map[topic] || null;
 }
 
-// ====== QUICK ANSWER (HERO) ======
+// ====== QUICK ANSWER ======
 function checkQuickAnswer() {
     const input = document.getElementById('quickAnswer');
+    if (!input) return;
     const answer = input.value.trim().toLowerCase();
     if (!answer) {
         showNotification('Please enter an answer', 'warning');
         return;
     }
-    // Simplified check for derivative of 3x²+2x-5
     if (answer.includes('6x+2') || answer.includes('6x + 2')) {
         showNotification('✅ Correct! The derivative is 6x + 2', 'success');
         input.value = '';
         input.classList.add('success');
         setTimeout(() => input.classList.remove('success'), 1000);
-        // Award small XP
         appState.points += 5;
-        localStorage.setItem('points', appState.points);
+        safeSetItem('points', appState.points.toString());
         updateStatsDisplay();
     } else {
         showNotification('❌ Not quite right. Try again!', 'error');
@@ -543,15 +543,12 @@ function updateLeaderboard(boardType = 'weekly') {
     const listContainer = document.querySelector('.leaderboard-list');
     if (!listContainer) return;
 
-    // Update active tab
     document.querySelectorAll('.leaderboard-tab').forEach(tab => {
         tab.classList.toggle('active', tab.dataset.board === boardType);
     });
 
-    // Update top three podium
     updatePodium(data.slice(0, 3));
 
-    // Build list (ranks 4+)
     let html = `
         <div class="leaderboard-header">
             <span>Rank</span>
@@ -581,15 +578,12 @@ function updatePodium(topThree) {
     const podiumXP = document.querySelectorAll('.podium p');
     const podiumImgs = document.querySelectorAll('.podium img');
     if (topThree.length >= 3) {
-        // 2nd place
         if (podiumNames[0]) podiumNames[0].textContent = topThree[1].name;
         if (podiumXP[0]) podiumXP[0].textContent = topThree[1].xp + ' XP';
         if (podiumImgs[0]) podiumImgs[0].src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${topThree[1].name}`;
-        // 1st place
         if (podiumNames[1]) podiumNames[1].textContent = topThree[0].name;
         if (podiumXP[1]) podiumXP[1].textContent = topThree[0].xp + ' XP';
         if (podiumImgs[1]) podiumImgs[1].src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${topThree[0].name}`;
-        // 3rd place
         if (podiumNames[2]) podiumNames[2].textContent = topThree[2].name;
         if (podiumXP[2]) podiumXP[2].textContent = topThree[2].xp + ' XP';
         if (podiumImgs[2]) podiumImgs[2].src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${topThree[2].name}`;
@@ -663,8 +657,8 @@ function updateStats() {
     } else {
         appState.streak = 1;
     }
-    localStorage.setItem('last_login', today);
-    localStorage.setItem('streak', appState.streak);
+    safeSetItem('last_login', today);
+    safeSetItem('streak', appState.streak.toString());
     updateStatsDisplay();
 }
 
@@ -674,7 +668,6 @@ function updateStatsDisplay() {
     const levelEl = document.getElementById('userLevel');
     if (streakEl) streakEl.textContent = appState.streak;
     if (pointsEl) pointsEl.textContent = appState.points;
-    // Simple level calculation
     appState.level = Math.floor(appState.points / 500) + 1;
     if (levelEl) levelEl.textContent = appState.level;
 }
@@ -683,7 +676,7 @@ function showAdminPanel() {
     showNotification('Admin panel is under development. Coming soon!', 'info');
 }
 
-// ====== CSS FOR NOTIFICATIONS (if not already in style.css) ======
+// ====== CSS FOR NOTIFICATIONS ======
 (function injectNotificationStyles() {
     if (!document.querySelector('#notification-styles')) {
         const style = document.createElement('style');
@@ -723,3 +716,6 @@ function showAdminPanel() {
         document.head.appendChild(style);
     }
 })();
+
+// Log that script is fully loaded
+console.log('🚀 CE Mastery Hub script ready!');
